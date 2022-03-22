@@ -18,8 +18,9 @@ console.log('sss',THREE, createAr, loader)
 loader.load('/portal.glb', 
   function (gltf) {
     let model = gltf.scene
-    model.scale.set(1, 1, 1)
-    model.position.y = 0
+    model.scale.set(1, .5, 1)
+    // model.position.x = 0
+    // model.position.y = 0
 
     let canvas = document.querySelector('#app-canvas')
     let app = new createAr(canvas, model, gltf.animations)
@@ -36,6 +37,9 @@ loader.load('/portal.glb',
 
 </script>
 
-<style>
-
+<style lang="less" scoped>
+#app-canvas {
+  width: 500px;
+  height: 500px;
+}
 </style>

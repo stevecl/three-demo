@@ -30,14 +30,14 @@ export class createAr {
 
   static createCamera () {
     let camera = new THREE.PerspectiveCamera(
-      50,
+      60,
       window.innerWidth / window.innerHeight,
       .1,
       1000
     )
-    camera.position.z = 2
-    camera.position.x = .5
-    camera.position.y = .3
+    camera.position.z = 1.5
+    camera.position.x = 0
+    camera.position.y = .5
     return camera
   }
 
@@ -63,8 +63,8 @@ export class createAr {
     let canvasSize = this.renderer.getSize(new THREE.Vector2())
     let windowSize = new THREE.Vector2(window.innerWidth, window.innerHeight)
     if (!canvasSize.equals(windowSize)) {
-      console.log('canvasSize', canvasSize, windowSize)
-      this.renderer.setSize(windowSize.x, windowSize.y, false)
+      // console.log('canvasSize', canvasSize, windowSize)
+      // this.renderer.setSize(windowSize.x, windowSize.y, false)
       // this.camera.aspect = windowSize.x / windowSize.y
       // this.camera.updateProjectionMatrix()
     }
