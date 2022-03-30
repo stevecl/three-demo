@@ -1,19 +1,20 @@
-// import  * as THREE  from 'three'
+import * as THREE from '../../libs/three.weapp.js'
+import { OrbitControls } from '../../libs/controls/OrbitControls.js'
 // import { createScopedThreejs } from 'threejs-miniprogram';
-let THREE, requestAnimationFrame
+let requestAnimationFrame
 export class createAr {
   constructor(THREE1, canvas, model, animations) {
     // THREE = createScopedThreejs(canvas)
     requestAnimationFrame = canvas.requestAnimationFrame
-    THREE = THREE1
+    // THREE = THREE1
     this.scene = createAr.createScene()
         .add(model)
         .add(createAr.createAmbientLight())
         .add(createAr.createDirectionlLight())
     this.camera = createAr.createCamera()
     this.renderer = createAr.createRenderer(canvas)
-    // this.mixer = new AnimationMixer(model, animations)
-    this.update(model)
+    this.controls = createAr.initControls(this.camera, this.renderer)
+    this.update()
   }
 
   static createScene () {
@@ -34,14 +35,12 @@ export class createAr {
 
   static createCamera () {
     let camera = new THREE.PerspectiveCamera(
-      60,
+      45,
       500 / 300,
       .1,
       1000
     )
-    camera.position.z = 1.5
-    camera.position.x = 0
-    camera.position.y = .5
+    camera.position.set(0, 0, 2)
     return camera
   }
 
@@ -53,13 +52,31 @@ export class createAr {
     return renderer
   }
 
-  update (model) {
+  static initControls(camera, renderer) {
+    let controls = new OrbitControls(camera, renderer.domElement);
+    //设置控制器的中心点
+    //controls.target.set( 0, 5, 0 );
+    // 如果使用animate方法时，将此函数删除
+    //controls.addEventListener( 'change', render );
+    // 使动画循环使用时阻尼或自转 意思是否有惯性
+    controls.enableDamping = true;
+    //controls.dampingFactor = 0.25;  //动态阻尼系数 就是鼠标拖拽旋转灵敏度
+    controls.enableZoom = true;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.5;
+    controls.minDistance = 1;
+    controls.maxDistance = 2000;
+    controls.enablePan = true;
+    return controls
+  }
+
+  update () {
     this.resize()
-    // model.rotation.y += .1
     this.renderer.render(this.scene, this.camera)
+    this.controls.update()
     requestAnimationFrame(() => { 
       // model.rotateY(0.01);//每次绕y轴旋转0.01弧度
-      this.update(model) 
+      this.update() 
     })
   }
 
@@ -75,24 +92,35 @@ export class createAr {
   }
 }
 
-export class AnimationMixer {
-  constructor (model, animations) {
-    this.clock = new THREE.Clock()
-    this.mixer = new THREE.AnimationMixer(model)
-    this.animations = animations
-  }
-
-  play (clip) {
-    let animation = this.animations.find(a => a.name === clip)
-    if (animation) {
-      this.mixer.stopAllAction()
-      this.mixer.clipAction(animation).pplay()
-      this.clip = clip
-    }
-  }
-
-  update () {
-    let delta = this.clock.getDelta()
-    this.mixer.update(delta)
-  }
+export const events = {
+  touchStart(e) {
+    console.log('canvas', e)
+    THREE.global.touchEventHandlerFactory('canvas', 'touchstart')(e)
+  },
+  touchMove(e) {
+    console.log('canvas', e)
+    THREE.global.touchEventHandlerFactory('canvas', 'touchmove')(e)
+  },
+  touchEnd(e) {
+    console.log('canvas', e)
+    THREE.global.touchEventHandlerFactory('canvas', 'touchend')(e)
+  },
+  touchCancel(e) {
+    // console.log('canvas', e)
+  },
+  longTap(e) {
+    // console.log('canvas', e)
+  },
+  tap(e) {
+    // console.log('canvas', e)
+  },
+  documentTouchStart(e) {
+    // console.log('document',e)
+  },
+  documentTouchMove(e) {
+    // console.log('document',e)
+  },
+  documentTouchEnd(e) {
+    // console.log('document',e)
+  },
 }

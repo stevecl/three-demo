@@ -17,9 +17,11 @@ onMounted(() => init())
 
 const init = async () => {
   let canvas = document.querySelector('#app-canvas')
-  let app = new createModel(canvas, getBox())
   let door = await getDoor()
-  app.addModel(door)
+  // let box = await getBox()
+  // door.add(box)
+  let app = new createModel(canvas, door)
+  // app.addModel(door)
 }
 
 const getBox = () => {
@@ -27,9 +29,14 @@ const getBox = () => {
   var geometry = new THREE.BoxBufferGeometry( 1, 1, 1 );
   
   var video = document.querySelector("#video");
+  console.log('video', video)
+  setTimeout(() => {
+    video.play()
+  }, 2000)
   var texture = new THREE.VideoTexture(video);
-  texture.wrapS = texture.wrapT = THREE.ClampToEdgeWrapping;
-  texture.minFilter = THREE.LinearFilter;
+  // console.log('texture', texture)
+  // texture.wrapS = texture.wrapT = THREE.ClampToEdgeWrapping;
+  // texture.minFilter = THREE.LinearFilter;
   let material = new THREE.MeshBasicMaterial( { map: texture } );
   return new THREE.Mesh(geometry, material)
 }

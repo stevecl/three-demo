@@ -1,10 +1,17 @@
 <!--pages/test/index.wxml-->
 <view>
+  <video id="video" autoplay controls src="https://www.wjceo.com/lib/textures/sintel.mp4"></video>
   <!--WebGL层-->
   <canvas 
     type="webgl" 
     id="webgl" 
     canvas-id="webgl" 
+    bindtouchstart="touchStart"
+    bindtouchmove="touchMove"
+    bindtouchend="touchEnd"
+    bindtouchcancel="touchCancel"
+    bindlongtap="longTap"
+    bindtap="tap"
     style="position:fixed;top:0;width:{{canvasWidth}}px;height:{{canvasHeight}}px;z-index:1;">
   </canvas>
   <!--摄像头层-->
