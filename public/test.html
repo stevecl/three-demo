@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>three.js webgl - equirectangular video panorama</title>
+        <meta charset="utf-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+        />
+        <style>
+            body {
+                /* background-color: #000000; */
+                margin: 0px;
+                overflow: hidden;
+            }
+
+            #info {
+                position: absolute;
+                top: 0px;
+                width: 100%;
+                color: #ffffff;
+                padding: 5px;
+                font-family: Monospace;
+                font-size: 13px;
+                font-weight: bold;
+                text-align: center;
+            }
+
+            a {
+                color: #ffffff;
+            }
+            #my-video {
+                position: fixed;
+                z-index: 99999;
+                top: 0;
+                left: 0;
+            }
+						#container {
+							width: 500px;
+							height: 300px;
+							position: absolute;
+							left: 500px;
+							top: 250px;
+						}
+        </style>
+        <link
+            href="https://vjs.zencdn.net/7.5.4/video-js.css"
+            rel="stylesheet"
+        />
+    </head>
+    <body>
+        <div id="container"></div>
+        <!-- 可以通过样式把video的控制层放到你想放的位置  或者 通过js自己去写一些控制方法 -->
+        <video
+            id="my-video"
+						src="./111.mp4"
+            class="video-js"
+            controls
+            preload="auto"
+            autoplay
+            width="640"
+            loop
+            height="264"
+            data-setup="{}"
+            crossorigin="anonymous"
+        >
+        </video>
+        <!-- <script src="https://vjs.zencdn.net/7.5.4/video.js"></script> -->
+        <!-- <script src="https://cdn.bootcss.com/three.js/r83/three.min.js"></script> -->
+				<script src="../node_modules/three/build/three.min.js"></script>
+				<script src="../node_modules/three/examples/js/loaders/GLTFLoader.js"></script>
+
+        <script>
+            // videojs('#my-video', {
+            //     controls: true,
+            //     autoplay: true,
+            //     preload: 'auto'
+            // })
+            var camera, scene, renderer
+
+            var isUserInteracting = false,
+                lon = 0,
+                lat = 0,
+                phi = 0,
+                theta = 0,
+                distance = 50,
+                onPointerDownPointerX = 0,
+                onPointerDownPointerY = 0,
+                onPointerDownLon = 0,
+                onPointerDownLat = 0
+
+            init()
+            animate()
+
+            function init() {
+                var container, mesh
+
+                container = document.getElementById('container')
+
+                camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1100)
+                camera.target = new THREE.Vector3(0, 0, 0)
+								camera.position.set(0, 0, 2)
+
+                scene = new THREE.Scene()
+								var helper = new THREE.AxesHelper(50);
+    						scene.add(helper);
+
+                var geometry = new THREE.SphereBufferGeometry(100, 60, 40)
+                geometry.scale(-1, 1, 1)
+
+                var texture = new THREE.VideoTexture(
+                    document.querySelector('#my-video')
+                )
+                var material = new THREE.MeshBasicMaterial({ map: texture })
+
+                mesh = new THREE.Mesh(geometry, material)
+
+                scene.add(mesh)
+                // scene.add(getDoor())
+								// scene.add(new THREE.AmbientLight(0x444444, 1))
+								// let light = new THREE.DirectionalLight(0xffffff, 2)
+								// light.position.set(0, 20, 20)
+								// light.castShadow = true;
+								// light.shadow.camera.top = 10;
+								// light.shadow.camera.bottom = -10;
+								// light.shadow.camera.left = -10;
+								// light.shadow.camera.right = 10;
+
+								// //告诉平行光需要开启阴影投射
+								// light.castShadow = true;
+								// scene.add(light)
+								
+
+                renderer = new THREE.WebGLRenderer()
+                renderer.setPixelRatio(window.devicePixelRatio)
+                renderer.setSize(400, 300)
+                container.appendChild(renderer.domElement)
+
+                document.addEventListener('mousedown', onDocumentMouseDown, false)
+                document.addEventListener('mousemove', onDocumentMouseMove, false)
+                document.addEventListener('mouseup', onDocumentMouseUp, false)
+                document.addEventListener('wheel', onDocumentMouseWheel, false)
+                window.addEventListener('resize', onWindowResize, false)
+            }
+
+            function onWindowResize() {
+                camera.aspect = 400 / 300
+                // camera.updateProjectionMatrix()
+                // renderer.setSize(window.innerWidth, window.innerHeight)
+            }
+
+            function onDocumentMouseDown(event) {
+                event.preventDefault()
+
+                isUserInteracting = true
+
+                onPointerDownPointerX = event.clientX
+                onPointerDownPointerY = event.clientY
+
+                onPointerDownLon = lon
+                onPointerDownLat = lat
+            }
+
+            function onDocumentMouseMove(event) {
+                if (isUserInteracting === true) {
+                    lon =
+                        (onPointerDownPointerX - event.clientX) * 0.1 +
+                        onPointerDownLon
+                    lat =
+                        (event.clientY - onPointerDownPointerY) * 0.1 +
+                        onPointerDownLat
+                }
+            }
+
+            function onDocumentMouseUp() {
+                isUserInteracting = false
+            }
+
+            function onDocumentMouseWheel(event) {
+                distance += event.deltaY * 0.05
+
+                distance = THREE.Math.clamp(distance, 1, 50)
+            }
+
+            function animate() {
+                requestAnimationFrame(animate)
+                update()
+            }
+
+            function update() {
+                lat = Math.max(-85, Math.min(85, lat))
+                phi = THREE.Math.degToRad(90 - lat)
+                theta = THREE.Math.degToRad(lon)
+                camera.position.x = distance * Math.sin(phi) * Math.cos(theta)
+                camera.position.y = distance * Math.cos(phi)
+                camera.position.z = distance * Math.sin(phi) * Math.sin(theta)
+                camera.lookAt(camera.target)
+                renderer.render(scene, camera)
+            }
+						// console.log('GLTFLoader', THREE)
+						function getDoor () {
+							return new Promise(resolve => {
+								let loader = new THREE.GLTFLoader()
+								loader.load('/portal.glb', 
+									function (gltf) {
+										let model = gltf.scene
+										model.scale.set(1, .5, 1)
+										resolve(model)
+									},
+									undefined,
+									function (error) {
+										console.error(error)
+									}
+								)
+							})
+						}
+        </script>
+    </body>
+</html>
+

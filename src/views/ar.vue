@@ -1,7 +1,7 @@
 <template>
   <!-- <div> ar page</div> -->
   <video id="video" autoplay controls>
-    <source src="/sintel.ogv" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+    <source src="../../111.mp4" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
     <!-- <source src="./1086x716.mp4" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'> -->
   </video>
   <canvas id="app-canvas"></canvas>
@@ -17,16 +17,20 @@ onMounted(() => init())
 
 const init = async () => {
   let canvas = document.querySelector('#app-canvas')
+  var group = new THREE.Group();
   let door = await getDoor()
-  // let box = await getBox()
-  // door.add(box)
+  let box = await getBox()
+  group.add( door );
+  group.add( box );
+  door.add(box)
   let app = new createModel(canvas, door)
   // app.addModel(door)
 }
 
 const getBox = () => {
-  //添加立方体
-  var geometry = new THREE.BoxBufferGeometry( 1, 1, 1 );
+  var geometry = new THREE.SphereBufferGeometry(50, 60, 40)
+  geometry.scale(-1, 1, 1)
+  // var geometry = new THREE.BoxBufferGeometry( 1, 1, 1 );
   
   var video = document.querySelector("#video");
   console.log('video', video)
@@ -37,7 +41,7 @@ const getBox = () => {
   // console.log('texture', texture)
   // texture.wrapS = texture.wrapT = THREE.ClampToEdgeWrapping;
   // texture.minFilter = THREE.LinearFilter;
-  let material = new THREE.MeshBasicMaterial( { map: texture } );
+  let material = new THREE.MeshBasicMaterial( { color: 0xffff00, map: texture } );
   return new THREE.Mesh(geometry, material)
 }
 
@@ -47,7 +51,7 @@ const getDoor = () => {
     loader.load('/portal.glb', 
       function (gltf) {
         let model = gltf.scene
-        model.scale.set(1, .5, 1)
+        model.scale.set(.1, .1, .1)
         resolve(model)
       },
       undefined,
@@ -70,5 +74,6 @@ canvas {
   position: fixed;
   left:0;
   bottom:0;
+  width: 400px;
 }
 </style>

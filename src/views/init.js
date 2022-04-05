@@ -41,7 +41,7 @@ export class createModel {
 
   static initCamera () {
     let camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, .1, 1000)
-    camera.position.set(0, 0, 2)
+    camera.position.set(0, 0, -.5)
     return camera
   }
 
@@ -65,7 +65,7 @@ export class createModel {
     controls.enableDamping = true;
     //controls.dampingFactor = 0.25;  //动态阻尼系数 就是鼠标拖拽旋转灵敏度
     controls.enableZoom = true;
-    controls.autoRotate = true;
+    // controls.autoRotate = true;
     controls.autoRotateSpeed = 0.5;
     controls.minDistance = 1;
     controls.maxDistance = 2000;
