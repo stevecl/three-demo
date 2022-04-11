@@ -41,7 +41,7 @@ export class createModel {
 
   static initCamera () {
     let camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, .1, 1000)
-    camera.position.set(0, 0, -.5)
+    camera.position.set(0, 5, 20)
     return camera
   }
 
